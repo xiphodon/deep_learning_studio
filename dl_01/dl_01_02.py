@@ -3,7 +3,7 @@
 # @Time    : 2018/11/15 11:13
 # @Author  : GuoChang
 # @Site    : https://github.com/xiphodon
-# @File    : dl_01.py
+# @File    : dl_01_02.py
 # @Software: PyCharm
 
 import numpy as np
