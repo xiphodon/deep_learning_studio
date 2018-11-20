@@ -6,13 +6,12 @@
 # @File    : dl_01_02.py
 # @Software: PyCharm
 
-import numpy as np
 import matplotlib.pyplot as plt
-import h5py
+import numpy as np
 import scipy
 from scipy import ndimage
-from PIL import Image
-import lr_utils
+
+from dl_01_02 import lr_utils
 
 
 def show_example_of_a_picture(*args, index=0):
