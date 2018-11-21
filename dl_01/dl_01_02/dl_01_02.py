@@ -11,7 +11,7 @@ import numpy as np
 import scipy
 from scipy import ndimage
 
-from dl_01_02 import lr_utils
+from dl_01.dl_01_02 import lr_utils
 
 
 def show_example_of_a_picture(*args, index=0):
@@ -414,9 +414,14 @@ def start():
     my_image = scipy.misc.imresize(image, size=(num_px, num_px)).reshape((1, num_px * num_px * 3)).T
     my_predicted_image = predict(d["w"], d["b"], my_image)
 
+    # 压缩前原图可视化
     plt.imshow(image)
     print("y = " + str(np.squeeze(my_predicted_image)) + ", your algorithm predicts a \"" + classes[
         int(np.squeeze(my_predicted_image)),].decode("utf-8") + "\" picture.")
+    plt.show()
+
+    # 压缩后的图片可视化
+    plt.imshow(scipy.misc.imresize(image, size=(num_px, num_px)))
     plt.show()
 
 
