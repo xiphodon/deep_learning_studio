@@ -219,8 +219,12 @@ def backward_propagation(parameters, cache, X, Y):
     dZ2 = A2 - Y
     dW2 = np.dot(dZ2, A1.T) / m
     db2 = np.sum(dZ2, axis=1, keepdims=True) / m
+
     dZ1 = np.multiply(np.dot(W2.T, dZ2), (1 - np.power(A1, 2))) # tanh
-    # dZ1 = np.multiply(np.dot(W2.T, dZ2), np.array(A1 > 0, dtype='int')) # ReLU
+    # A1[A1 >= 0] = 1
+    # A1[A1 < 0] = 0
+    # dZ1 = np.multiply(np.dot(W2.T, dZ2), A1) # ReLU
+
     dW1 = np.dot(dZ1, X.T) / m
     db1 = np.sum(dZ1, axis=1, keepdims=True) / m
     ### END CODE HERE ###
@@ -453,7 +457,7 @@ def start():
 
     # Tuning hidden layer size
     plt.figure(figsize=(16, 32))
-    hidden_layer_sizes = [1, 2, 3, 4, 5, 10, 20]
+    hidden_layer_sizes = [1, 3, 5, 8, 10, 15, 20]
     for i, n_h in enumerate(hidden_layer_sizes):
         plt.subplot(5, 2, i + 1)
         plt.title('Hidden Layer of size %d' % n_h)
@@ -511,5 +515,5 @@ if __name__ == '__main__':
     # update_parameters_test()
     # nn_model_test()
     # predict_test()
-    # start()
-    start2()
+    start()
+    # start2()
