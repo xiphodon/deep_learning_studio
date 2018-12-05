@@ -85,7 +85,9 @@ def initialize_parameters_deep(layer_dims):
 
     for l in range(1, L):
         ### START CODE HERE ### (≈ 2 lines of code)
-        parameters['W' + str(l)] = np.random.randn(layer_dims[l], layer_dims[l - 1])
+        parameters['W' + str(l)] = np.random.randn(layer_dims[l], layer_dims[l - 1]) / np.sqrt(layer_dims[l - 1]/2)
+        # parameters['W' + str(l)] = np.random.randn(layer_dims[l], layer_dims[l - 1]) / np.sqrt(layer_dims[l - 1])
+        # parameters['W' + str(l)] = np.random.randn(layer_dims[l], layer_dims[l - 1]) * 0.01
         parameters['b' + str(l)] = np.zeros(shape=(layer_dims[l], 1))
         ### END CODE HERE ###
 
@@ -252,10 +254,12 @@ def compute_cost(AL, Y):
     """
 
     m = Y.shape[1]
+    # AL = AL + 10**(-8)  # 控制分母不为0
 
     # Compute loss from aL and y.
     ### START CODE HERE ### (≈ 1 lines of code)
     cost = -(1/m) * np.sum(np.multiply(Y, np.log(AL)) + np.multiply(1-Y, np.log(1-AL)), axis=1, keepdims=True)
+    # cost = -(1/m) * np.sum(Y * np.log(AL) + (1-Y) * np.log(1-AL), axis=1, keepdims=True)
     ### END CODE HERE ###
 
     cost = np.squeeze(cost)  # To make sure your cost's shape is what we expect (e.g. this turns [[17]] into 17).
@@ -468,7 +472,7 @@ def update_parameters_test():
 
 if __name__ == '__main__':
     # initialize_parameters_test()
-    # initialize_parameters_deep_test()
+    initialize_parameters_deep_test()
     # linear_forward_test()
     # linear_activation_forward_test()
     # L_model_forward_test()
@@ -476,4 +480,4 @@ if __name__ == '__main__':
     # linear_backward_test()
     # linear_activation_backward_test()
     # L_model_backward_test()
-    update_parameters_test()
+    # update_parameters_test()

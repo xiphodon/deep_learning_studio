@@ -163,6 +163,7 @@ def initialize_parameters_deep(layer_dims):
         
     return parameters
 
+
 def linear_forward(A, W, b):
     """
     Implement the linear part of a layer's forward propagation.
@@ -183,6 +184,7 @@ def linear_forward(A, W, b):
     cache = (A, W, b)
     
     return Z, cache
+
 
 def linear_activation_forward(A_prev, W, b, activation):
     """
@@ -214,6 +216,7 @@ def linear_activation_forward(A_prev, W, b, activation):
     cache = (linear_cache, activation_cache)
 
     return A, cache
+
 
 def L_model_forward(X, parameters):
     """
@@ -248,6 +251,7 @@ def L_model_forward(X, parameters):
             
     return AL, caches
 
+
 def compute_cost(AL, Y):
     """
     Implement the cost function defined by equation (7).
@@ -263,12 +267,13 @@ def compute_cost(AL, Y):
     m = Y.shape[1]
 
     # Compute loss from aL and y.
-    cost = (1./m) * (-np.dot(Y,np.log(AL).T) - np.dot(1-Y, np.log(1-AL).T))
+    cost = (1./m) * (-np.dot(Y, np.log(AL).T) - np.dot(1-Y, np.log(1-AL).T))
     
     cost = np.squeeze(cost)      # To make sure your cost's shape is what we expect (e.g. this turns [[17]] into 17).
     assert(cost.shape == ())
     
     return cost
+
 
 def linear_backward(dZ, cache):
     """
@@ -401,8 +406,8 @@ def predict(X, y, parameters):
     """
     
     m = X.shape[1]
-    n = len(parameters) // 2 # number of layers in the neural network
-    p = np.zeros((1,m))
+    n = len(parameters) // 2  # number of layers in the neural network
+    p = np.zeros((1, m))
     
     # Forward propagation
     probas, caches = L_model_forward(X, parameters)
@@ -410,15 +415,15 @@ def predict(X, y, parameters):
     
     # convert probas to 0/1 predictions
     for i in range(0, probas.shape[1]):
-        if probas[0,i] > 0.5:
-            p[0,i] = 1
+        if probas[0, i] > 0.5:
+            p[0, i] = 1
         else:
-            p[0,i] = 0
+            p[0, i] = 0
     
     #print results
     #print ("predictions: " + str(p))
     #print ("true labels: " + str(y))
-    print("Accuracy: "  + str(np.sum((p == y)/m)))
+    print("Accuracy: " + str(np.sum((p == y)/m)))
         
     return p
 
