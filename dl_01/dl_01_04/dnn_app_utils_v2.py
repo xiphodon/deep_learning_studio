@@ -20,6 +20,7 @@ def sigmoid(Z):
     
     return A, cache
 
+
 def relu(Z):
     """
     Implement the RELU function.
@@ -61,6 +62,7 @@ def relu_backward(dA, cache):
     assert (dZ.shape == Z.shape)
     
     return dZ
+
 
 def sigmoid_backward(dA, cache):
     """
@@ -294,6 +296,7 @@ def linear_backward(dZ, cache):
     
     return dA_prev, dW, db
 
+
 def linear_activation_backward(dA, cache, activation):
     """
     Implement the backward propagation for the LINEAR->ACTIVATION layer.
@@ -319,6 +322,7 @@ def linear_activation_backward(dA, cache, activation):
         dA_prev, dW, db = linear_backward(dZ, linear_cache)
     
     return dA_prev, dW, db
+
 
 def L_model_backward(AL, Y, caches):
     """
@@ -359,6 +363,7 @@ def L_model_backward(AL, Y, caches):
 
     return grads
 
+
 def update_parameters(parameters, grads, learning_rate):
     """
     Update parameters using gradient descent
@@ -381,6 +386,7 @@ def update_parameters(parameters, grads, learning_rate):
         parameters["b" + str(l+1)] = parameters["b" + str(l+1)] - learning_rate * grads["db" + str(l+1)]
         
     return parameters
+
 
 def predict(X, y, parameters):
     """
@@ -415,6 +421,7 @@ def predict(X, y, parameters):
     print("Accuracy: "  + str(np.sum((p == y)/m)))
         
     return p
+
 
 def print_mislabeled_images(classes, X, y, p):
     """
