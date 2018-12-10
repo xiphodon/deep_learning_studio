@@ -145,7 +145,7 @@ def compute_loss(a3, Y):
     Returns:
     loss - value of the loss function
     """
-    epsilon = 10 ** (-7)
+    epsilon = 1e-7
     m = Y.shape[1]
     logprobs = np.multiply(-np.log(a3), Y) + np.multiply(-np.log(1 - a3), 1 - Y)
     # logprobs = np.multiply(-np.log(a3 + epsilon), Y) + np.multiply(-np.log((1 - a3) + epsilon), 1 - Y)

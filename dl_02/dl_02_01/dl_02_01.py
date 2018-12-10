@@ -17,6 +17,7 @@ plt.rcParams['figure.figsize'] = (7.0, 4.0) # set default size of plots
 plt.rcParams['image.interpolation'] = 'nearest'
 plt.rcParams['image.cmap'] = 'gray'
 
+# load image dataset: blue/red dots in circles
 train_X, train_Y, test_X, test_Y = load_dataset()
 
 
@@ -263,14 +264,14 @@ def start():
     程序入口
     :return:
     """
-    # load image dataset: blue/red dots in circles
-
-
-if __name__ == '__main__':
-    # start()
     # initialize_parameters_zeros_test()
     # initialize_parameters_zeros_model_test()
     # initialize_parameters_random_test()
     # initialize_parameters_random_model_test()
     # initialize_parameters_he_test()
     initialize_parameters_he_model_test()
+
+
+if __name__ == '__main__':
+    start()
+
