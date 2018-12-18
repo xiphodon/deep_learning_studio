@@ -87,7 +87,8 @@ def predict(X, parameters):
     p = tf.argmax(z3)
     
     sess = tf.Session()
-    prediction = sess.run(p, feed_dict = {x: X})
+    prediction = sess.run(p, feed_dict={x: X})
+    sess.close()
         
     return prediction
 
@@ -119,4 +120,3 @@ def forward_propagation_for_predict(X, parameters):
     Z3 = tf.add(tf.matmul(W3, A2), b3)                     # Z3 = np.dot(W3,Z2) + b3
     
     return Z3
-    z
