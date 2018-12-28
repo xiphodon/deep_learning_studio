@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 from tensorflow.python.framework import ops
 from dl_02.dl_02_03.tf_utils import load_dataset, random_mini_batches, convert_to_one_hot, predict
+import time
 
 np.random.seed(1)
 
@@ -257,10 +258,10 @@ def sigin_model():
     print(Y_train_orig.shape)
 
     # Example of a picture
-    index = 0
-    plt.imshow(X_train_orig[index])
-    print("y = " + str(np.squeeze(Y_train_orig[:, index])))
-    plt.show()
+    # index = 0
+    # plt.imshow(X_train_orig[index])
+    # print("y = " + str(np.squeeze(Y_train_orig[:, index])))
+    # plt.show()
 
     # Flatten the training and test images
     X_train_flatten = X_train_orig.reshape(X_train_orig.shape[0], -1).T
@@ -466,7 +467,7 @@ def compute_cost_test():
 
 
 def model(X_train, Y_train, X_test, Y_test, learning_rate=0.0001, weight_scale=0.01,
-          num_epochs=1500, minibatch_size=32, print_cost=True):
+          num_epochs=1500, minibatch_size=32, learning_decay_rate=0.015, print_cost=True):
     """
     Implements a three-layer tensorflow neural network: LINEAR->RELU->LINEAR->RELU->LINEAR->SOFTMAX.
 
@@ -494,6 +495,8 @@ def model(X_train, Y_train, X_test, Y_test, learning_rate=0.0001, weight_scale=0
     # Create Placeholders of shape (n_x, n_y)
     ### START CODE HERE ### (1 line)
     X, Y = create_placeholders(n_x, n_y)
+    learning_rate_dynamic = tf.placeholder(dtype=tf.float32, name='learning_rate_dynamic')
+    learning_rate_dynamic_value = learning_rate
     ### END CODE HERE ###
 
     # Initialize parameters
@@ -514,7 +517,8 @@ def model(X_train, Y_train, X_test, Y_test, learning_rate=0.0001, weight_scale=0
     # Backpropagation: Define the tensorflow optimizer. Use an AdamOptimizer.
     ### START CODE HERE ### (1 line)
     # optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(cost)
-    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+    # optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
+    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate_dynamic).minimize(cost)
 
     ### END CODE HERE ###
 
@@ -542,14 +546,17 @@ def model(X_train, Y_train, X_test, Y_test, learning_rate=0.0001, weight_scale=0
                 # IMPORTANT: The line that runs the graph on a minibatch.
                 # Run the session to execute the "optimizer" and the "cost", the feedict should contain a minibatch for (X,Y).
                 ### START CODE HERE ### (1 line)
-                _, minibatch_cost = sess.run([optimizer, cost], feed_dict={X: minibatch_X, Y: minibatch_Y})
+                # _, minibatch_cost = sess.run([optimizer, cost], feed_dict={X: minibatch_X, Y: minibatch_Y})
+                learning_rate_dynamic_value = 1. / (1 + learning_decay_rate * epoch) * learning_rate
+                # learning_rate_dynamic_value = learning_decay_rate ** epoch * learning_rate
+                _, minibatch_cost = sess.run([optimizer, cost], feed_dict={X: minibatch_X, Y: minibatch_Y, learning_rate_dynamic:learning_rate_dynamic_value})
                 ### END CODE HERE ###
 
                 epoch_cost += minibatch_cost / num_minibatches
 
             # Print the cost every epoch
-            if print_cost is True and epoch % 100 == 0:
-                print("Cost after epoch %i: %f" % (epoch, epoch_cost))
+            if print_cost is True and epoch % 5 == 0:
+                print("Cost after epoch %i: %f, learning_rate: %f" % (epoch, epoch_cost, learning_rate_dynamic_value))
             if print_cost is True and epoch % 5 == 0:
                 costs.append(epoch_cost)
 
@@ -582,7 +589,153 @@ def model_test():
     :return:
     """
     X_train, Y_train, X_test, Y_test, classes = sigin_model()
-    parameters = model(X_train, Y_train, X_test, Y_test, learning_rate=0.00005, num_epochs=2500, weight_scale=0.05)
+    parameters = model(X_train, Y_train, X_test, Y_test,
+                       learning_rate=0.0001, learning_decay_rate=0.0008, num_epochs=1500,
+                       weight_scale=0.07, minibatch_size=128)
+
+    ## learning_rate=0.00006, learning_decay_rate=0.0012, num_epochs=2000, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:86.388886%
+    ## Test Accuracy:79.16667%
+
+    ## learning_rate=0.00008, learning_decay_rate=0.0012, num_epochs=2000, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:84.62963%
+    ## Test Accuracy:78.333336%
+
+    ## learning_rate=0.00006, learning_decay_rate=0.0008, num_epochs=1500, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:87.59%
+    ## Test Accuracy:80.83%
+
+    ## learning_rate=0.00008, learning_decay_rate=0.0008, num_epochs=1500, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:87.78%
+    ## Test Accuracy:80%
+
+    ## learning_rate=0.00009, learning_decay_rate=0.0008, num_epochs=1500, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:88.98148%
+    ## Test Accuracy:81.666666%
+
+    ## learning_rate=0.0001, learning_decay_rate=0.0008, num_epochs=1500, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:88.51852%
+    ## Test Accuracy:80%
+
+    ## learning_rate=0.00006, learning_decay_rate=0.002, num_epochs=5000, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:90.5556%
+    ## Test Accuracy:80.8333%
+
+    ## learning_rate=0.00006, learning_decay_rate=0.0008, num_epochs=5000, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:93.98148%
+    ## Test Accuracy:85%
+
+    ## learning_rate=0.00007, learning_decay_rate=0.0008, num_epochs=1500, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:87.69%
+    ## Test Accuracy:77.5%
+
+    ## learning_rate=0.00004, learning_decay_rate=0.0008, num_epochs=1500, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:80.19%
+    ## Test Accuracy:73.33%
+
+    ## learning_rate=0.00005, learning_decay_rate=0.0008, num_epochs=1500, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:85.46%
+    ## Test Accuracy:80%
+
+    ## learning_rate=0.00008, learning_decay_rate=0.0008, num_epochs=1500, weight_scale=0.07, minibatch_size=256
+    ## Train Accuracy:79.17%
+    ## Test Accuracy:75%
+
+    ## learning_rate=0.0001, learning_decay_rate=0.0012, num_epochs=2500, weight_scale=0.08, minibatch_size=128
+    ## Train Accuracy:83.70%
+    ## Test Accuracy:74.17%
+
+    ## learning_rate=0.00008, learning_decay_rate=0.0008, num_epochs=2500, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:91.85%
+    ## Test Accuracy:82.5%
+
+    ## learning_rate=0.00005, learning_decay_rate=0.0008, num_epochs=2500, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:89.26%
+    ## Test Accuracy:85%
+
+    ## learning_rate=0.00005, learning_decay_rate=0.002, num_epochs=2500, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:83.70%
+    ## Test Accuracy:77.5%
+
+    ## learning_rate=0.00005, learning_decay_rate=0.0012, num_epochs=2500, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:87.41%
+    ## Test Accuracy:80%
+
+    ## learning_rate=0.00005, learning_decay_rate=0.0008, num_epochs=2500, weight_scale=0.06, minibatch_size=128
+    ## Train Accuracy:91.20%
+    ## Test Accuracy:84.17%
+
+    ## learning_rate=0.00005, learning_decay_rate=0.0004, num_epochs=2500, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:85%
+    ## Test Accuracy:75.83%
+
+    ## learning_rate=0.01, learning_decay_rate=0.2, num_epochs=2500, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:39.26%
+    ## Test Accuracy:41.67%
+
+    ## learning_rate=0.001, learning_decay_rate=0.04, num_epochs=2500, weight_scale=0.07, minibatch_size=128
+    ## Train Accuracy:79.72%
+    ## Test Accuracy:75%
+
+    ## learning_rate=0.0001, learning_decay_rate=0.002, num_epochs=2500, weight_scale=0.06, minibatch_size=128
+    ## Train Accuracy:84.63%
+    ## Test Accuracy:76.67%
+
+    ## learning_rate=0.00008, learning_decay_rate=0.002, num_epochs=5000, weight_scale=0.06, minibatch_size=128
+    ## Train Accuracy:91.02%
+    ## Test Accuracy:82.5%
+
+    ## learning_rate=0.001, learning_decay_rate=0.01, num_epochs=2500, weight_scale=0.05, minibatch_size=128
+    ## Train Accuracy:90.83%
+    ## Test Accuracy:76.67%
+
+    ## learning_rate=0.002, learning_decay_rate=0.012, num_epochs=2500, weight_scale=0.05, minibatch_size=128
+    ## Train Accuracy:82.22%
+    ## Test Accuracy:63.33%
+
+    ## learning_rate=0.0005, learning_decay_rate=0.008, num_epochs=1500, weight_scale=0.05, minibatch_size=128
+    ## Train Accuracy:82.78%
+    ## Test Accuracy:70.83%
+
+    ## learning_rate=0.0006, learning_decay_rate=0.01, num_epochs=1500, weight_scale=0.05, minibatch_size=128
+    ## Train Accuracy:83.33%
+    ## Test Accuracy:72.5%
+
+    ## learning_rate=0.0008, learning_decay_rate=0.01, num_epochs=1500, weight_scale=0.05, minibatch_size=128
+    ## Train Accuracy:70.93%
+    ## Test Accuracy:66.67%
+
+    ## learning_rate=0.001, learning_decay_rate=0.01, num_epochs=1500, weight_scale=0.05, minibatch_size=256
+    ## Train Accuracy:70.19%
+    ## Test Accuracy:70.83%
+
+    ## learning_rate=0.001, learning_decay_rate=0.01, num_epochs=1500, weight_scale=0.05, minibatch_size=128
+    ## Train Accuracy:88.06%
+    ## Test Accuracy:75.83%
+
+    ## learning_rate=0.001, learning_decay_rate=0.02, num_epochs=1500, weight_scale=0.05, minibatch_size=128
+    ## Train Accuracy:75.65%
+    ## Test Accuracy:70.00%
+
+    ## learning_rate=0.001, learning_decay_rate=0.01, num_epochs=1500, weight_scale=0.05, minibatch_size=64
+    ## Train Accuracy:79.25%
+    ## Test Accuracy:67.5%
+
+    ## learning_rate=0.001, learning_decay_rate=0.012, num_epochs=2500, weight_scale=0.05
+    ## Train Accuracy:86.67%
+    ## Test Accuracy:71.67%
+
+    ## learning_rate=0.001, learning_decay_rate=0.013, num_epochs=2500, weight_scale=0.01
+    ## Train Accuracy:98.80%
+    ## Test Accuracy:70.83%
+
+    ## learning_rate=0.001, learning_decay_rate=0.015, num_epochs=2500, weight_scale=0.06
+    ## Train Accuracy:76.02%
+    ## Test Accuracy:66.67%
+
+    ## learning_rate=0.001, learning_decay_rate=0.02, num_epochs=2500, weight_scale=0.05
+    ## Train Accuracy:83.89%
+    ## Test Accuracy:65.83%
 
     ## learning_rate=0.0001, num_epochs=1500, weight_scale=0.01
     ## Train Accuracy:98.98%
@@ -604,7 +757,7 @@ def model_test():
     ## Train Accuracy:93.06%
     ## Test Accuracy:80.83%
 
-    ## learning_rate=0.00005, num_epochs=2500, weight_scale=0.05
+    ## learning_rate=0.00005, num_epochs=2500, weight_scale=0.05  ###### 最优
     ## Train Accuracy:96.85%
     ## Test Accuracy:86.67%
 
@@ -719,4 +872,7 @@ def start():
 
 
 if __name__ == '__main__':
+    time_start = time.time()
     start()
+    time_end = time.time()
+    print(f'spend time {time_end - time_start} s')
