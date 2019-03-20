@@ -21,7 +21,7 @@ from keras.utils import plot_model
 from dl_04.dl_04_02.resnets_utils import *
 from keras.initializers import glorot_uniform
 import scipy.misc
-from matplotlib.pyplot import imshow
+import matplotlib.pyplot as plt
 
 import keras.backend as K
 K.set_image_data_format('channels_last')
@@ -266,20 +266,46 @@ def ResNet50_test():
     print("X_test shape: " + str(X_test.shape))
     print("Y_test shape: " + str(Y_test.shape))
 
-    if os.path.exists('./myhappymodel.h5'):
+    if os.path.exists('./mymodel.h5'):
         print('load model ...')
-        model = load_model('./myhappymodel.h5')
+        model = load_model('./mymodel.h5')
     else:
         model = ResNet50(input_shape=(64, 64, 3), classes=6)
         model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
         model.fit(X_train, Y_train, epochs=30, batch_size=128)
 
-        model.save('myhappymodel.h5')
+        model.save('mymodel.h5')
 
     preds = model.evaluate(X_test, Y_test)
     print("Loss = " + str(preds[0]))
     print("Test Accuracy = " + str(preds[1]))
+
+    predict_my_image(model)
+
+
+def predict_my_image(model):
+    """
+    预测我的图片
+    :param model:
+    :return:
+    """
+    img_path = '../../dl_02/dl_02_03/images/1.png'
+    img = image.load_img(img_path, target_size=(64, 64))
+    x = image.img_to_array(img)
+    x = np.expand_dims(x, axis=0)
+    x = preprocess_input(x)
+    print('Input image shape:', x.shape)
+    my_image = scipy.misc.imread(img_path)
+    plt.imshow(my_image)
+    print("class prediction vector [p(0), p(1), p(2), p(3), p(4), p(5)] = ")
+    print(model.predict(x))
+    plt.show()
+
+    model.summary()
+
+    # plot_model(model, to_file='model.png')
+    # SVG(model_to_dot(model).create(prog='dot', format='svg'))
 
 
 def start():
