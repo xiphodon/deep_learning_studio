@@ -17,7 +17,7 @@ _FLOATX = 'float32'
 
 def variable(value, dtype=_FLOATX, name=None):
     v = tf.Variable(np.asarray(value, dtype=dtype), name=name)
-    _get_session().run(v.initializer)
+    # _get_session().run(v.initializer)
     return v
 
 def shape(x):
@@ -136,8 +136,8 @@ def load_weights_from_FaceNet(FRmodel):
     for name in weights:
         if FRmodel.get_layer(name) != None:
             FRmodel.get_layer(name).set_weights(weights_dict[name])
-        elif model.get_layer(name) != None:
-            model.get_layer(name).set_weights(weights_dict[name])
+        # elif model.get_layer(name) != None:
+        #     model.get_layer(name).set_weights(weights_dict[name])
 
 def load_weights():
     # Set weights path
