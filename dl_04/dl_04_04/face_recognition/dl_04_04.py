@@ -8,25 +8,10 @@
 
 # Face Recognition
 
-from keras.models import Sequential
-from keras.layers import Conv2D, ZeroPadding2D, Activation, Input, concatenate
-from keras.models import Model
-from keras.layers.normalization import BatchNormalization
-from keras.layers.pooling import MaxPooling2D, AveragePooling2D
-from keras.layers.merge import Concatenate
-from keras.layers.core import Lambda, Flatten, Dense
-from keras.initializers import glorot_uniform
-from keras.engine.topology import Layer
 from keras import backend as K
 K.set_image_data_format('channels_first')
-import cv2
-import os
-import numpy as np
-from numpy import genfromtxt
-import pandas as pd
-import tensorflow as tf
-from dl_04.dl_04_04.fr_utils import *
-from dl_04.dl_04_04.inception_blocks import *
+from dl_04.dl_04_04.face_recognition.fr_utils import *
+from dl_04.dl_04_04.face_recognition.inception_blocks import *
 
 import os
 os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
@@ -198,7 +183,9 @@ def start():
     verify("images/camera_0.jpg", "younes", database, FRmodel)
     verify("images/camera_2.jpg", "kian", database, FRmodel)
 
+    # Face Recognition
     who_is_it("images/camera_0.jpg", database, FRmodel)
+    who_is_it("images/camera_2.jpg", database, FRmodel)
 
 
 if __name__ == '__main__':
